@@ -2,10 +2,10 @@ Name:           targetd
 License:        GPLv3
 Group:          System Environment/Libraries
 Summary:        Service to make storage remotely configurable
-Version:        0.7.1
+Version:        0.8.6
 Release:        1%{?dist}
-URL:            https://fedorahosted.org/targetd/
-Source:         https://fedorahosted.org/released/targetd/%{name}-%{version}.tar.gz
+URL:            https://github.com/open-iscsi/targetd
+Source:         https://github.com/open-iscsi/targetd/releases/download/v%{version}/targetd-%{version}.tar.gz
 Source1:        targetd.service
 Source2:        targetd.yaml
 BuildArch:      noarch
@@ -27,7 +27,7 @@ those volumes over iSCSI.
 %setup -q
 
 %build
-%{__python} setup.py build
+%{__python2} setup.py build
 gzip --stdout targetd.8 > targetd.8.gz
 
 %install
@@ -37,7 +37,7 @@ mkdir -p %{buildroot}%{_sysconfdir}/target/
 install -m 644 %{SOURCE1} %{buildroot}%{_unitdir}/targetd.service
 install -m 644 %{SOURCE2} %{buildroot}%{_sysconfdir}/target/targetd.yaml
 install -m 644 targetd.8.gz %{buildroot}%{_mandir}/man8/
-%{__python} setup.py install --skip-build --root %{buildroot}
+%{__python2} setup.py install --skip-build --root %{buildroot}
 
 %post
 if [ $1 -eq 1 ] ; then
@@ -62,12 +62,19 @@ fi
 %files
 %{_bindir}/targetd
 %{_unitdir}/targetd.service
-%{python_sitelib}/*
+%{python2_sitelib}/*
 %doc LICENSE README.md API.md client
 %{_mandir}/man8/targetd.8.gz
 %config(noreplace) %{_sysconfdir}/target/targetd.yaml
 
 %changelog
+* Thu Apr 27 2017 Tony Asleson <tasleson@redhat.com> - 0.8.6-1
+- Update to latest version
+
+* Fri Feb 17 2017 Tony Asleson <tasleson@redhat.com> - 0.8.5-1
+- Update to latest version
+- Be explicit in using python2
+
 * Mon Feb 10 2014 Andy Grover <agrover@redhat.com> - 0.7.1-1
 - Upddate to latest version
 - Update service file for switching dependency to rtslib from targetcli

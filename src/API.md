@@ -101,6 +101,152 @@ direction.
 Calling this method is not required for exports to work. If it is not
 called, exports require no authentication.
 
+### initiator_list(standalone_only=False)
+List all initiators.
+Parameters:
+    standalone_only(bool, optional):
+    If 'standalone_only' is True, only return initiator which is not in any
+    NodeACLGroup.
+    By default, all initiators will be included in result.
+Returns:
+    [
+        {
+            'init_id': str,
+            'init_type': str,
+        },
+    ]
+    The 'init_id' of result is the iSCSI IQN/NAA/EUI address of initiator.
+    Example: 'iqn.2000-04.com.example:someone-01'
+    The 'init_type' is reserved for future use, currently, it is 'iscsi'.
+
+Errors:
+    N/A
+
+Access Group operations
+-----------------------
+Access Group is a group of initiators which sharing the same volume mapping
+status.
+
+### access_group_list()
+List all access groups.
+
+Parameters:
+    N/A
+Returns:
+    [
+        {
+            'name': str
+            'init_ids': list(str),
+            'init_type': str,
+        },
+    ]
+    The 'name' is the name of acccess group.
+    The 'init_ids' of result is the iSCSI IQN/NAA/EUI address of initiators
+    which belong to current access group.
+    Example: ['iqn.2000-04.com.example:someone-01']
+    The 'init_type' is reserved for future use, currently, it is 'iscsi'.
+
+Errors:
+    N/A
+
+### access_group_create(ag_name, init_id, init_type)
+Create new access group.
+
+Parameters:
+    ag_name (str): Access group name
+    init_id (str): iSCSI initiator address
+    init_type (str): Reserved for future use. Should be set as 'iscsi'
+Returns:
+    N/A
+Errors:
+    -32602: Invalid parameter. Provided 'ag_name' is illegal. Check
+            'Conventions' for detail.
+    -153:   No support. The 'init_type' is not 'iscsi'
+    -50:    Name conflict. Requested 'ag_name' is in use
+    -52:    Exists initiator. Requested 'init_id' is in use
+
+### access_group_destroy(ag_name)
+Delete a access group including it's initiator and volume masking status.
+No error will be raised even provided access group name does not exist.
+Parameters:
+    ag_name (str): Access group name
+Returns:
+    N/A
+Errors:
+    N/A
+
+### access_group_init_add(ag_name, init_id, init_type)
+Add a new initiator into a access group.
+If defined access group does not exist, create one with requested initiator.
+Parameters:
+    ag_name (str): Access group name
+    init_id (str): iSCSI initiator address
+    init_type (str): Reserved for future use. Should be set as 'iscsi'
+Returns:
+    N/A
+Errors:
+    -52:    Exists initiator. Requested 'init_id' is in use
+
+### access_group_init_del(ag_name, init_id, init_type)
+Remove a initiator from an access group.
+If requested initiator not in defined access group, return silently.
+If defined access group does not exist, return silently.
+Parameters:
+    ag_name (str): Access group name
+    init_id (str): iSCSI initiator address
+    init_type (str): Reserved for future use. Should be set as 'iscsi'
+Returns:
+    N/A
+Errors:
+    N/A
+
+### access_group_map_list()
+Query volume mapping status of all access groups.
+Parameters:
+    N/A
+Returns:
+    [
+        {
+            'ag_name': str,
+            'h_lun_id': int,
+            'pool_name': str,
+            'vol_name': str,
+        }
+    ]
+    The 'ag_name' is the name of access group.
+    The 'h_lun_id' is the SCSI LUN ID seen by iSCSI initiator.
+    The 'pool_name' is the name of pool which volume is belonging to.
+    The 'vol_name' is the name of volume.
+Errors:
+    N/A
+
+### access_group_map_create(pool_name, vol_name, ag_name, h_lun_id=None)
+Grant certain access group the rw access to defined volume.
+Parameters:
+    pool_name (str): The name of pool which defined volume belongs to.
+    vol_name (str): The name of volume.
+    ag_name (str): Access group name
+    h_lun_id (int, optional):
+        Host LUN ID (the SCSI LUN ID seen by iSCSI initiator).
+        Range is 0 to 255.
+        If not defined, targetd will try to find the next available one.
+Returns:
+    N/A
+Errors:
+    -1000:  No free host_lun_id. LUN ID between 0 ~ 255 is in use.
+    -200:   Access group not found.
+
+### access_group_map_destroy(pool_name, vol_name, ag_name)
+Revoke the rw access of certain access group to defined volume.
+Parameters:
+    pool_name (str): The name of pool which defined volume belongs to.
+    vol_name (str): The name of volume.
+    ag_name (str): Access group name
+Returns:
+    N/A
+Errors:
+    N/A
+
 File system operations
 ----------------------
 Ability to create different file systems and perform operation on them.  The
@@ -147,7 +293,7 @@ Returns an array of export objects.  Each export object contains: `host`, `path`
 
 ### nfs_export_add(host, path, options)
 Adds a NFS export given a `host`, and an export `path` to export and a list of `options`
-Options is a list of NFS export options.  Each option can be either a single value 
+Options is a list of NFS export options.  Each option can be either a single value
 eg. no_root_squash or can be a `key=value` like `sec=sys`.  See `man 5 exports` for all available
 supported options and the formats supported for `host`.
 

@@ -8,7 +8,7 @@ allocate volumes from an LVM volume group, and export those volumes
 over iSCSI.  It also has the ability to create remote file systems and export
 those file systems via NFS/CIFS (work in progress).
 
-targetd's sister project is [libstoragemanagement](http://sourceforge.net/projects/libstoragemgmt/),
+targetd's sister project is [libStorageManagement](https://github.com/libstorage/libstoragemgmt/),
 which allows admins to configure storage arrays (including targetd) in an array-neutral manner.
 
 targetd development
@@ -45,12 +45,17 @@ an example:
     ssl: false
     target_name: iqn.2003-01.org.example.mach1:1234
 
-    block_pools: [vg-targetd, vg-targetd-too]
+    block_pools: [vg-targetd/thin_pool, vg-targetd-too/thin_pool]
     fs_pools: [/mnt/btrfs]
 
-targetd defaults to using the "vg-targetd" volume group, and username 'admin'.
-The admin password does not have a default -- each installation must set it.
+targetd defaults to using the "vg-targetd/thin_pool" volume group and thin
+pool logical volume, and username 'admin'. The admin password does not have a
+default -- each installation must set it.
 
-Then, run `sudo ./targetd.py`.
+Then, in the root of the source directory, do the following as root:
+```bash
+# export PYTHONPATH=`pwd`
+# ./scripts/targetd`
+```
 
 client.py is a basic testing script, to get started making API calls.

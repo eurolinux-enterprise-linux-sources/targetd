@@ -12,28 +12,10 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import re
-import hashlib
 import os
 import os.path
 import shlex
-from utils import invoke
-
-
-def md5(t):
-    h = hashlib.md5()
-    h.update(t)
-    return h.hexdigest()
-
-
-def make_line_array(out):
-    """
-    Split the text out as an array of text strings
-    """
-    rc = []
-    for line in out.split('\n'):
-        if len(line) > 1:
-            rc.append(line)
-    return rc
+from targetd.utils import invoke
 
 
 class Export(object):
@@ -54,16 +36,18 @@ class Export(object):
     WDELAY = 0x00002000
     HIDE = 0x00004000
     INSECURE = 0x00008000
+    NO_ALL_SQUASH = 0x00010000
 
     bool_option = dict(secure=SECURE, rw=RW, ro=RO, sync=SYNC, async=ASYNC,
                        no_wdelay=NO_WDELAY, nohide=NOHIDE,
                        cross_mnt=CROSS_MNT, no_subtree_check=NO_SUBTREE_CHECK,
                        insecure_locks=INSECURE_LOCKS, root_squash=ROOT_SQUASH,
                        all_squash=ALL_SQUASH, wdelay=WDELAY, hide=HIDE,
-                       insecure=INSECURE, no_root_squash=NO_ROOT_SQUASH)
+                       insecure=INSECURE, no_root_squash=NO_ROOT_SQUASH,
+                       no_all_squash=NO_ALL_SQUASH)
 
     key_pair = dict(mountpoint=str, mp=str, fsid=None, refer=str, replicas=str,
-                    anonuid=int, anongid=int)
+                    anonuid=int, anongid=int, sec=str)
 
     export_regex = '([\/a-zA-Z0-9\.-_]+)[\s]+(.+)\((.+)\)'
     octal_nums_regex = r"""\\([0-7][0-7][0-7])"""
