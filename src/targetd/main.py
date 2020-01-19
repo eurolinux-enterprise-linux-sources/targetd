@@ -21,14 +21,13 @@ import os
 import setproctitle
 import json
 from BaseHTTPServer import BaseHTTPRequestHandler, HTTPServer
-from threading import Lock
 import yaml
 import itertools
 import socket
 import ssl
 import traceback
 import logging as log
-import sys
+from utils import TargetdError
 
 default_config_path = "/etc/target/targetd.yaml"
 
@@ -47,15 +46,9 @@ default_config = dict(
 
 config = {}
 
-
-class TargetdError(Exception):
-    def __init__(self, error_code, message, *args, **kwargs):
-        Exception.__init__(self, *args, **kwargs)
-        self.error = error_code
-        self.msg = message
-
 # Will be added to by fs/block.initialize()
 mapping = dict()
+
 
 class TargetHandler(BaseHTTPRequestHandler):
 
@@ -178,7 +171,7 @@ def load_config(config_path):
 
     # compat: handle old single-pool config option
     if 'pool_name' in config:
-        config['block_pools'].append(config['pool_name'])
+        config['block_pools'] = [config['pool_name']]
         del config['pool_name']
 
     # uniquify pool lists

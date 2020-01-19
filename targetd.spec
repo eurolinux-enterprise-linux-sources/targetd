@@ -2,15 +2,15 @@ Name:           targetd
 License:        GPLv3
 Group:          System Environment/Libraries
 Summary:        Service to make storage remotely configurable
-Version:        0.6.1
+Version:        0.7.1
 Release:        1%{?dist}
-URL:            https://github.com/agrover/targetd
-Source:         https://github.com/downloads/agrover/%{name}/%{name}-%{version}.tar.gz
+URL:            https://fedorahosted.org/targetd/
+Source:         https://fedorahosted.org/released/targetd/%{name}-%{version}.tar.gz
 Source1:        targetd.service
 Source2:        targetd.yaml
 BuildArch:      noarch
 BuildRequires:  systemd, python-devel
-Requires:       targetcli PyYAML python-setproctitle
+Requires:       python-rtslib PyYAML python-setproctitle
 Requires:       lvm2-python-libs >= 2.02.99, nfs-utils, btrfs-progs
 Requires(post): systemd
 Requires(preun): systemd
@@ -68,6 +68,16 @@ fi
 %config(noreplace) %{_sysconfdir}/target/targetd.yaml
 
 %changelog
+* Mon Feb 10 2014 Andy Grover <agrover@redhat.com> - 0.7.1-1
+- Upddate to latest version
+- Update service file for switching dependency to rtslib from targetcli
+
+* Mon Jan 27 2014 Andy Grover <agrover@redhat.com> - 0.6.1-3
+- Update Source/URL
+
+* Fri Dec 27 2013 Daniel Mach <dmach@redhat.com> - 0.6.1-2
+- Mass rebuild 2013-12-27
+
 * Thu Aug 8 2013 Andy Grover <agrover@redhat.com> 0.6.1-1
 - Update to latest version, make needed changes
 - Drop patches:
