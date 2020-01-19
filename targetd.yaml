@@ -1,0 +1,11 @@
+# See http://www.yaml.org/spec/1.2/spec.html for more on YAML.
+
+# No default password, please pick a good one.
+
+password:
+
+# defaults below; uncomment and edit
+#pool_name: vg-targetd
+#user: admin
+#ssl: false
+#target_name: iqn.2003-01.org.example.mach1:1234

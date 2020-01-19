@@ -1,0 +1,11 @@
+[Unit]
+Description=targetd storage array API daemon
+Requires=targetcli.service
+After=targetcli.service
+
+[Service]
+ExecStart=/usr/bin/targetd
+
+[Install]
+WantedBy=multi-user.target
+
